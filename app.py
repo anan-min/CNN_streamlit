@@ -156,43 +156,45 @@ def display_history(history):
 
 
 def streamlit_app():
-    st.title("CNN Image Classifier")
-    st.markdown("Upload an image to classify:")
+    train_data, test_data = EDA()
+    CNN_model = train_and_cache_model(params, train_data, test_data)
+    CNN_model.save('CNN_model.h5')
+    # st.markdown("Upload an image to classify:")
 
-    if 'CNN_model' not in st.session_state:
-        with st.spinner('Training CNN Model...'):
-            # Load model if already trained
-            if os.path.exists('CNN_model.h5'):
-                CNN_model = load_model('CNN_model.h5')  # Load the model from disk if it exists
-                st.session_state.CNN_model = CNN_model  # Store it in session_state
-            else:
-                train_data, test_data = EDA()  # Load data
-                CNN_model = train_and_cache_model(params, train_data, test_data)  # Train the model
-                st.session_state.CNN_model = CNN_model  # Store the model in session_state
+    # if 'CNN_model' not in st.session_state:
+    #     with st.spinner('Training CNN Model...'):
+    #         # Load model if already trained
+    #         if os.path.exists('CNN_model.h5'):
+    #             CNN_model = load_model('CNN_model.h5')  # Load the model from disk if it exists
+    #             st.session_state.CNN_model = CNN_model  # Store it in session_state
+    #         else:
+    #             train_data, test_data = EDA()  # Load data
+    #             CNN_model = train_and_cache_model(params, train_data, test_data)  # Train the model
+    #             st.session_state.CNN_model = CNN_model  # Store the model in session_state
 
 
 
 
-    # Upload image for prediction
-    uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
+    # # Upload image for prediction
+    # uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
 
-    if uploaded_image is not None:
-        # Display the uploaded image
-        st.image(uploaded_image, caption="Uploaded Image", use_container_width=True)
+    # if uploaded_image is not None:
+    #     # Display the uploaded image
+    #     st.image(uploaded_image, caption="Uploaded Image", use_container_width=True)
 
-        # Preprocess and predict
-        img_array = preprocess_image(uploaded_image)
-        predictions = st.session_state.CNN_model.predict(img_array)
+    #     # Preprocess and predict
+    #     img_array = preprocess_image(uploaded_image)
+    #     predictions = st.session_state.CNN_model.predict(img_array)
 
-        # Get the class with the highest probability
-        predicted_class = np.argmax(predictions, axis=1)[0]
+    #     # Get the class with the highest probability
+    #     predicted_class = np.argmax(predictions, axis=1)[0]
 
-        # Display prediction
-        st.subheader('Prediction')
-        st.write(class_names[predicted_class])
+    #     # Display prediction
+    #     st.subheader('Prediction')
+    #     st.write(class_names[predicted_class])
 
-        st.subheader('Prediction Probabilities')
-        st.write(predictions)
+    #     st.subheader('Prediction Probabilities')
+    #     st.write(predictions)
 
 
 streamlit_app()
