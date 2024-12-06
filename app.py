@@ -7,8 +7,10 @@ from tensorflow.keras.applications.resnet50 import preprocess_input
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
+from tensorflow.keras.models import load_model
 from PIL import Image
 import pandas as pd
+import os 
 
 class_names = ['African_elephant', 'German_shepherd', 'basketball', 'beach_wagon', 'bison', 'bullfrog', 'goldfish', 'jellyfish', 'koala', 'lion', 'pizza', 'salamander', 'snorkel', 'sports_car', 'stopwatch', 'sunglasses', 'tarantula', 'teddy_teddy bear', 'trolleybus', 'volleyball']
 params = {'dropout_rate': 0.6, 'l2_rate': 0.4, 'learning_rate': 0.0003, 'epoch': 25}
@@ -110,18 +112,17 @@ def build_model(params, train_data, test_data):
         # Evaluate the model
         CNN_model.evaluate(test_data)
 
-        return history_CNN_model, CNN_model
+        return CNN_model
 
     except Exception as e:
         print(f"An error occurred during model training: {e}")
         return None
 
 
-@st.cache(allow_output_mutation=True)
 def train_and_cache_model(params, train_data, test_data):
-    # Train the model and return both the history and the model
-    history, CNN_model = build_model(params, train_data, test_data)
-    return history, CNN_model
+    CNN_model = build_model(params, train_data, test_data)
+    CNN_model.save('CNN_model.h5')
+    return CNN_model
 
 
 def preprocess_image(uploaded_image):
@@ -158,19 +159,19 @@ def streamlit_app():
     st.title("CNN Image Classifier")
     st.markdown("Upload an image to classify:")
 
-    # Display training history if it exists
-    if 'history' in st.session_state:
-        history = st.session_state.history  # Retrieve history from session_state
-        display_history(history)  # Display the plots
-
-    # Train the model if not done already
     if 'CNN_model' not in st.session_state:
         with st.spinner('Training CNN Model...'):
-            train_data, test_data = EDA()  # Load data
-            history, CNN_model = train_and_cache_model(params, train_data, test_data)  # Cache the model and history
-            # Save model and history in session_state
-            st.session_state.history = history
-            st.session_state.CNN_model = CNN_model
+            # Load model if already trained
+            if os.path.exists('CNN_model.h5'):
+                CNN_model = load_model('CNN_model.h5')  # Load the model from disk if it exists
+                st.session_state.CNN_model = CNN_model  # Store it in session_state
+            else:
+                train_data, test_data = EDA()  # Load data
+                CNN_model = train_and_cache_model(params, train_data, test_data)  # Train the model
+                st.session_state.CNN_model = CNN_model  # Store the model in session_state
+
+
+
 
     # Upload image for prediction
     uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
