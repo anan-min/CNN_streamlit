@@ -13,7 +13,7 @@ import pandas as pd
 import os 
 
 class_names = ['African_elephant', 'German_shepherd', 'basketball', 'beach_wagon', 'bison', 'bullfrog', 'goldfish', 'jellyfish', 'koala', 'lion', 'pizza', 'salamander', 'snorkel', 'sports_car', 'stopwatch', 'sunglasses', 'tarantula', 'teddy_teddy bear', 'trolleybus', 'volleyball']
-params = {'dropout_rate': 0.6, 'l2_rate': 0.4, 'learning_rate': 0.0003, 'epoch': 25}
+params = {'dropout_rate': 0.31, 'l2_rate': 0.23, 'learning_rate': 4e-05, 'epoch': 30}
 
 
 def EDA():

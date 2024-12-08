@@ -16,8 +16,6 @@ class_names = ['African_elephant', 'German_shepherd', 'basketball', 'beach_wagon
 params = {'dropout_rate': 0.6, 'l2_rate': 0.4, 'learning_rate': 0.0003, 'epoch': 25}
 
 
-
-
 def preprocess_image(uploaded_image):
     img = Image.open(uploaded_image)
     img = img.resize((64, 64))
@@ -57,6 +55,5 @@ def streamlit_app():
 
         st.subheader('Prediction Probabilities')
         st.write(predictions)
-
 
 streamlit_app()
